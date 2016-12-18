@@ -29,7 +29,7 @@ setup(
     keywords="ai lnp visualization flask webapp",
     url="https://github.com/librairy/web",
     packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
-    install_requires=['flask', 'flask_negotiate', 'requests'],
+    install_requires=['flask', 'flask_negotiate', 'requests', 'redis'],
     classifiers=[],
     scripts=['librairy-web.py']
 )
