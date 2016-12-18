@@ -39,7 +39,7 @@ flask_log_level = 'ERROR' if not FLASK_DEBUG_MODE else 'DEBUG'
 flask_log_handler = RotatingFileHandler(
     FLASK_LOG_FILE, maxBytes=10000000, backupCount=5
 )
-flask_log = logging.getLogger('werkzeug')
+flask_log = logging.Logger('librairy-logger')
 flask_log.setLevel(flask_log_level)
 flask_log.addHandler(flask_log_handler)
 
@@ -55,7 +55,7 @@ def logging_request(request, response):
 def logging_exception(request, traceback):
     timestamp = strftime('[%Y-%b-%d %H:%M]')
     flask_log.error(
-        '%s %s %s %s %s\n%s', timestamp, request.remote_addr, request.method,
+        '\n%s %s %s %s %s\n%s', timestamp, request.remote_addr, request.method,
         request.scheme, request.full_path, traceback
     )
 
