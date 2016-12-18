@@ -70,11 +70,11 @@ def raise_config_exception(field, parameters):
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 
-SERVICE_LISTEN_PROT = os.environ.get('LIBRAIRY_SERVICE_PROT', 'http')
+SERVICE_LISTEN_PROT = str(os.environ.get('LIBRAIRY_SERVICE_PROT', 'http'))
 if SERVICE_LISTEN_PROT != 'http' and SERVICE_LISTEN_PROT != 'https':
     raise_config_exception('Service protocol', 'http or https')
 
-SERVICE_LISTEN_IP = os.environ.get('LIBRAIRY_SERVICE_IP', '127.0.0.1')
+SERVICE_LISTEN_IP = str(os.environ.get('LIBRAIRY_SERVICE_IP', '127.0.0.1'))
 SERVICE_LISTEN_PORT = int(os.environ.get('LIBRAIRY_SERVICE_PORT', 80))
 
 if SERVICE_LISTEN_PORT == 443 and SERVICE_LISTEN_PROT == 'http' or \
@@ -84,3 +84,9 @@ if SERVICE_LISTEN_PORT == 443 and SERVICE_LISTEN_PROT == 'http' or \
 SERVICE_LISTEN_URL = SERVICE_LISTEN_PROT + '://' + SERVICE_LISTEN_IP
 if SERVICE_LISTEN_PORT != 80 and SERVICE_LISTEN_PORT != 443:
     SERVICE_LISTEN_URL += ':' + str(SERVICE_LISTEN_PORT)
+
+CACHE_REDIS_LISTEN_IP = str(os.environ.get('LIBRAIRY_CACHE_IP', '127.0.0.1'))
+CACHE_REDIS_LISTEN_PORT = int(os.environ.get('LIBRAIRY_CACHE_PORT', 80))
+CACHE_REDIS_PWD = str(os.environ.get('LIBRAIRY_CACHE_PWD'))
+if CACHE_REDIS_PWD == '':
+    CACHE_REDIS_PWD = None
