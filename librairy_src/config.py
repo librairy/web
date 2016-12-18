@@ -92,5 +92,5 @@ CACHE_REDIS_TTL = int(os.environ.get('LIBRAIRY_CACHE_TTL', 60 * 60 * 12))
 CACHE_REDIS_LISTEN_IP = str(os.environ.get('LIBRAIRY_CACHE_IP', '127.0.0.1'))
 CACHE_REDIS_LISTEN_PORT = int(os.environ.get('LIBRAIRY_CACHE_PORT', 6379))
 CACHE_REDIS_PWD = str(os.environ.get('LIBRAIRY_CACHE_PWD'))
-if CACHE_REDIS_PWD == '':
+if CACHE_REDIS_PWD == '' or CACHE_REDIS_PWD == 'None':
     CACHE_REDIS_PWD = None
