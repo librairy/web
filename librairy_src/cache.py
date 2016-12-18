@@ -23,7 +23,10 @@ def redis_create_pool(h, p, pwd, db):
         __redis_db.client_list()
         return __redis_db
     except redis.ConnectionError:
-        config.raise_config_exception('Redis Cache', 'online')
+        config.raise_config_exception('Redis cache', 'online')
+        return None
+    except redis.ResponseError:
+        config.raise_config_exception('Redis configuration', 'correct')
         return None
 
 
@@ -40,6 +43,11 @@ CACHE_DB = {
 
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+
+def clean_domain(domain_id):
+    CACHE_DB['domains'].delete(domain_id)
+    CACHE_DB['topics'].delete(domain_id)
 
 
 def get_domain_cache(domain_id):
