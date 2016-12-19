@@ -10,8 +10,8 @@
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
 """
 
-from flask import Flask, Response, request
-from librairy_src import config
+from flask import Flask, Response, request, render_template
+from librairy_src import config, service
 import traceback
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -37,10 +37,18 @@ def after_request(response):
 def exceptions(e):
     tb = traceback.format_exc()
     config.logging_exception(request, tb)
-    return e.status_code
+    if 'status_code' in e:
+        return e.status_code
+    else:
+        return '', 500
 
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+
+@app.route('/', methods=['GET'])
+def render_librairy_web():
+    return render_template('index.html')
 
 
 if __name__ == '__main__':
@@ -48,5 +56,5 @@ if __name__ == '__main__':
     app.run(
         host=config.FLASK_LISTEN_IP,
         port=config.FLASK_LISTEN_PORT,
-        debug=config.FLASK_DEBUG_MODE
+        debug=False
     )
