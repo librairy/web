@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<!-- Copyright (C) Librairy. Apache 2.0 License. -->
+<html lang="{% block app_language %}{% endblock %}">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="description" content="Librairy Application">
+    <meta name="author" content="Ontology Engineering Group.">
+    <meta name="robots" content="noimageindex">
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta property="og:title" content="Librairy Application" />
+    <link rel="shortcut icon"
+          href="{{ url_for('static', filename='icon/favicon.ico') }}">
+    <link rel="favourite icon"
+          href="{{ url_for('static', filename='icon/favicon.ico') }}" type="image/x-icon">
+    <link rel="apple-touch-icon-precomposed"
+          href="{{ url_for('static', filename='icon/apple-icon-precomposed.png') }}">
+    <link rel="apple-touch-icon" sizes="57x57"
+          href="{{ url_for('static', filename='icon/apple-icon-57x57.png') }}">
+    <link rel="apple-touch-icon" sizes="60x60"
+          href="{{ url_for('static', filename='icon/apple-icon-60x60.png') }}">
+    <link rel="apple-touch-icon" sizes="72x72"
+          href="{{ url_for('static', filename='icon/apple-icon-72x72.png') }}">
+    <link rel="apple-touch-icon" sizes="76x76"
+          href="{{ url_for('static', filename='icon/apple-icon-76x76.png') }}">
+    <link rel="apple-touch-icon" sizes="114x114"
+          href="{{ url_for('static', filename='icon/apple-icon-114x114.png') }}">
+    <link rel="apple-touch-icon" sizes="120x120"
+          href="{{ url_for('static', filename='icon/apple-icon-120x120.png') }}">
+    <link rel="apple-touch-icon" sizes="144x144"
+          href="{{ url_for('static', filename='icon/apple-icon-144x144.png') }}">
+    <link rel="apple-touch-icon" sizes="152x152"
+          href="{{ url_for('static', filename='icon/apple-icon-152x152.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180"
+          href="{{ url_for('static', filename='icon/apple-icon-180x180.png') }}">
+    <link rel="icon" type="image/png" sizes="192x192"
+          href="{{ url_for('static', filename='icon/android-icon-192x192.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32"
+          href="{{ url_for('static', filename='icon/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="96x96"
+          href="{{ url_for('static', filename='icon/favicon-96x96.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16"
+          href="{{ url_for('static', filename='icon/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='icon/manifest.json') }}">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage"
+          content="{{ url_for('static', filename='icon/ms-icon-144x144.png') }}">
+    <meta name="theme-color" content="#ffffff">
+    <link href="https://fonts.googleapis.com/css?family=Work+Sans" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+    {% block head_css %}
+    {% endblock %}
+    {% block head_js %}
+    {% endblock %}
+    <title>Librairy Application</title>
+</head>
+<body>
+    <header>
+        <div id="lib-logo" class="header-pic"></div>
+        <div id="lib-brand-logo" class="header-pic"></div>
+        <div id="oeg-brand-logo"class="header-pic"></div>
+    </header>
+    <div id="wrapper">
+        {% block content %}
+        {% endblock %}
+    </div>
+    <footer>
+        <p>Company © 2016</p>
+    </footer>
+</body>
+</html>
