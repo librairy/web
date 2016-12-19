@@ -7,9 +7,15 @@
     width: 300px;
 }
 
+#loading-container.hidden {
+    opacity: 0;
+    -webkit-transition: opacity 1250ms;
+    transition: opacity 1250ms;
+}
+
 #loading-container > p {
     width: 100%;
-    padding-top: 40px;
+    padding-top: 60px;
     text-align: center;
     margin: 0;
     font-size: 22px;"
