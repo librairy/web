@@ -30,8 +30,8 @@ var addConnectionMessage = function addConnectionMessage()
 
 var showErrorMessage = function showErrorMessage(type)
 {
-    if (!d3.select("#wrapper").classed("loaded"))
-        d3.select("#wrapper").classed("loaded", true);
+    var wrap = d3.select("#wrapper");
+    wrap.attr("class", "loaded");
     if (type === 0) addEmptyMessage();
     else addConnectionMessage();
 };
@@ -41,18 +41,7 @@ var hideErrorMessage = function hideErrorMessage()
     d3.select("wrapper-error").remove();
 };
 
-var removeLoading = function removeLoading(completionBlock)
-{
-    var loading = d3.select("#loading-container");
-    loading.classed("hidden", true);
-    setTimeout(function ()
-    {
-        loading.remove();
-        completionBlock();
-    }, 1250);
-};
-
-var showLoading = function showLoading()
+var showLoadingDomains = function showLoading()
 {
     var wrap = d3.select("#wrapper");
     var wrapLoading = wrap.append("div").attr("id", "loading-container");
@@ -61,4 +50,15 @@ var showLoading = function showLoading()
     for (var i = 0; i < classes.length; i++)
         wrapBooks.append("li").attr("class", "loading-book " + classes[i]);
     wrapLoading.append("p").text(libTranslations["msg-loading"]["es"]);
+};
+
+var hideLoadingDomains = function hideLoading(completionBlock)
+{
+    var loading = d3.select("#loading-container");
+    loading.classed("hidden", true);
+    setTimeout(function ()
+    {
+        loading.remove();
+        completionBlock();
+    }, 1250);
 };
