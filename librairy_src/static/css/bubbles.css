@@ -1,9 +1,43 @@
 /* Copyright (C) Librairy. Apache 2.0 License. */
 
+/* header button */
+
+#button-panel {
+    margin-left: auto;
+    width: 230px;
+    border-radius: 2px;
+    height: 80%;
+    margin-right: 5px;
+    background-color: #FED136;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+#button-panel > p {
+    color: black;
+    text-align: center;
+    margin: 0px;
+    padding: 0px;
+    font-size: 18px;
+}
+
 /* wrapper and rows properties */
 
 #wrapper.circles {
+    overflow-y: auto;
+    overflow-x: hidden;
+    align-items: inherit;
+    justify-content: inherit;
+}
+
+#wrapper-container {
+    align-items: center;
+    display: flex;
     flex-direction: column;
+    justify-content: center;
+    width: 100%;
 }
 
 .circle-row {

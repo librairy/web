@@ -14,10 +14,23 @@ var domainsDict = {};
 
 var showPanelDomains = function showPanelDomains()
 {
-    // TODO: Panel, UX, animations
+    // Check if button exists
+    var button = document.getElementById("button-panel");
+    if (button !== null) return;
+
+    // Create button
+    var button = d3.select('header')
+        .append("div").attr("id", "button-panel");
+    button.append("p").text(libTranslations['but-panel']['es']);
+    button.on('click', showVisualizations);
 };
 
 var hidePanelDomains = function hidePanelDomains()
 {
-    // TODO: Panel, UX, animations
+    // Check if button exists
+    var button = document.getElementById("button-panel");
+    if (button === null) return;
+
+    // Remove button
+    d3.select('#button-panel').remove();
 };
