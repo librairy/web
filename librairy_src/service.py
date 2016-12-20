@@ -31,7 +31,11 @@ def get_service_domain(request, domain_id):
             dom_info = requests.get(
                 config.SERVICE_LISTEN_URL + '/api/domains/' + domain_id
             )
-            dom_info_return = dom_info.json()
+            if dom_info.status_code == 200:
+                dom_info_return = dom_info.json()
+            else:
+                config.logging_exception(request, dom_info)
+                dom_info_return = {}
         except requests.ConnectionError:
             tb = traceback.format_exc()
             config.logging_exception(request, tb)
