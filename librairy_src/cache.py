@@ -47,7 +47,9 @@ CACHE_DB = {
 
 def clean_domain(domain_id):
     CACHE_DB['domains'].delete(domain_id)
-    CACHE_DB['topics'].delete(domain_id)
+    topics_keys = CACHE_DB['topics'].keys(domain_id + '*')
+    for topic_key in topics_keys:
+        CACHE_DB['topics'].delete(topic_key)
 
 
 def get_domain_cache(domain_id):
@@ -64,11 +66,18 @@ def save_domain_cache(domain_id, values):
 
 def get_topic_cache(topic_id):
     if CACHE_DB['topics'].exists(topic_id):
-        return CACHE_DB['topics'].hgetall(topic_id)
+        return {
+            'words': CACHE_DB['topics'].hgetall(topic_id),
+            'documents': int(
+                CACHE_DB['topics'].get(topic_id + ':documents')
+            )
+        }
     else:
         return None
 
 
-def save_topic_cache(topic_id, values):
-    CACHE_DB['topics'].hmset(topic_id, values)
+def save_topic_cache(topic_id, words, docs):
+    CACHE_DB['topics'].hmset(topic_id, words)
     CACHE_DB['topics'].expire(topic_id, config.CACHE_REDIS_TTL)
+    CACHE_DB['topics'].set(topic_id + ':documents', docs)
+    CACHE_DB['topics'].expire(topic_id + ':documents', config.CACHE_REDIS_TTL)
