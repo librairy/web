@@ -25,14 +25,14 @@ var bubbleHandler = function bubbleHandler(e)
         circle.attr("class", "circle-column circle-selected");
         domainsSelected.push(circleId);
     }
-    if (domainsSelected.length > 0)
+    if (domainsSelected.length > 1)
         showPanelDomains();
     else hidePanelDomains();
 };
 
 var createCircleRow = function createCircleRow()
 {
-    return d3.select("#wrapper")
+    return d3.select("#wrapper-container")
         .append("div").attr("class", "circle-row");
 };
 
@@ -58,12 +58,15 @@ var showCircles = function showCircles(domains)
 
     var wrap = d3.select("#wrapper");
     wrap.attr("class", "loaded circles");
+    var wrapBubbles = wrap.append("div")
+        .attr("id", "wrapper-container");
 
     // Generate window constraints
     var nDomains = domains.length;
     var baseColour = Math.floor(Math.random() * 360);
     var maxRows = (window.innerHeight > 600) ? 3 : 2;
     var maxHeight = parseInt((window.innerHeight - 200) / maxRows) - 5;
+    if (maxHeight < 250) maxHeight = 250;
     var nRow = parseInt((window.innerWidth - 40) / (maxHeight + 40));
 
     // If only, it exists one row
@@ -78,6 +81,7 @@ var showCircles = function showCircles(domains)
 
     // Create first row
     var circleRow = createCircleRow();
+    var totalRows = 1;
     var count = 0;
 
     // Iterate to create circles or row if it is necessary
@@ -91,8 +95,13 @@ var showCircles = function showCircles(domains)
         );
         if (i < domains.length -1 && ++count == nRow)
         {
+            totalRows++;
             circleRow = createCircleRow();
             count = 0;
         }
     }
+    var wrapHeight = totalRows * (maxHeight + 48);
+    wrapHeight = (wrapHeight < window.innerHeight - 200) ?
+        wrapHeight = '100%' : wrapHeight + 'px';
+    wrapBubbles.style("height", wrapHeight);
 };
