@@ -1,15 +1,30 @@
 {% extends "base.html" %}
 {% block head_css %}
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/loading.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bubbles.css') }}">
 {% endblock %}
 {% block head_js %}
 <script type="text/javascript">var libTranslations={{ language_values|tojson }};</script>
-<script type="text/javascript" src="{{ url_for('static', filename='js/messages.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/d3.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/messages.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/bubblesPanel.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/bubbles.js') }}"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function(e)
     {
-        showLoading();
+        // Load UX
+        showLoadingDomains();
+
+        // Load Domains
+        d3.json('/endpoint/domains', function(e)
+        {
+            hideLoadingDomains(function()
+            {
+                if (e === null)
+                    showErrorMessage(1);
+                else showCircles(e);
+            });
+        });
     });
 </script>
 {% endblock %}
