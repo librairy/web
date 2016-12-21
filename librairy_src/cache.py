@@ -42,6 +42,10 @@ CACHE_DB = {
     'relations': redis_create_pool(
         config.CACHE_REDIS_LISTEN_IP, config.CACHE_REDIS_LISTEN_PORT,
         config.CACHE_REDIS_PWD, 2
+    ),
+    'comparisons': redis_create_pool(
+        config.CACHE_REDIS_LISTEN_IP, config.CACHE_REDIS_LISTEN_PORT,
+        config.CACHE_REDIS_PWD, 3
     )
 }
 
@@ -55,6 +59,18 @@ def clean_domain(domain_id):
     topics_keys = CACHE_DB['topics'].keys(domain_id + '*')
     for topic_key in topics_keys:
         CACHE_DB['topics'].delete(topic_key)
+
+
+def get_domain_compare(compare_id):
+    if CACHE_DB['comparisons'].exists(compare_id):
+        return CACHE_DB['comparisons'].hgetall(compare_id)
+    else:
+        return None
+
+
+def save_domain_compare(compare_id, values):
+    CACHE_DB['comparisons'].hmset(compare_id, values)
+    CACHE_DB['comparisons'].expire(compare_id, 3600)
 
 
 def get_domain_relations(domain_id):
