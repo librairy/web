@@ -14,8 +14,6 @@ var bubbleHandler = function bubbleHandler(e)
     var circleIdParsed = circleId.replace('circle-', '');
     var circle = d3.select('#' + circleId);
 
-    console.log(circleIdParsed);
-    console.log(domainsSelected);
     // Check if domain has been selected
     if (circleIdParsed in domainsSelected)
     {
@@ -27,7 +25,8 @@ var bubbleHandler = function bubbleHandler(e)
         circle.attr("class", "circle-column circle-selected");
         domainsSelected[circleIdParsed] = circle.style("background-color");
     }
-    console.log(domainsSelected);
+
+    // Activate button if there are more than 2 selected
     if (Object.keys(domainsSelected).length > 1)
         showButtonNav(0);
     else hideButtonNav();
@@ -103,6 +102,8 @@ var showCircles = function showCircles(domains)
             count = 0;
         }
     }
+
+    // Adjust correctly height
     var wrapHeight = totalRows * (maxHeight + 48);
     wrapHeight = (wrapHeight < window.innerHeight - 200) ?
         wrapHeight = '100%' : wrapHeight + 'px';
