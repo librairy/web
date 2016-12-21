@@ -83,7 +83,7 @@ def save_domain_cache(domain_id, values):
 
 def get_topic_cache(topic_id):
     if CACHE_DB['topics'].exists(topic_id):
-        CACHE_DB['topics'].hgetall(topic_id)
+        return CACHE_DB['topics'].hgetall(topic_id)
     else:
         return None
 
