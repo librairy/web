@@ -41,18 +41,31 @@ var hideErrorMessage = function hideErrorMessage()
     d3.select("wrapper-error").remove();
 };
 
-var showLoadingDomains = function showLoading()
+var showLoadingTopics = function showLoadingTopics()
+{
+    showLoading(1);
+};
+
+var showLoadingDomains = function showLoadingDomains()
+{
+    showLoading(0);
+};
+
+var showLoading = function showLoading(type)
 {
     var wrap = d3.select("#wrapper");
+    wrap.attr("class", "");
     var wrapLoading = wrap.append("div").attr("id", "loading-container");
     var wrapBooks = wrapLoading.append("ul").attr("class", "loading-books");
     var classes = ["first", "second", "third", "fourth", "fifth", "sixth"];
     for (var i = 0; i < classes.length; i++)
         wrapBooks.append("li").attr("class", "loading-book " + classes[i]);
-    wrapLoading.append("p").text(libTranslations["msg-loading"]["es"]);
+    if (type == 0)
+        wrapLoading.append("p").text(libTranslations["msg-loading-dom"]["es"]);
+    else wrapLoading.append("p").text(libTranslations["msg-loading-top"]["es"]);
 };
 
-var hideLoadingDomains = function hideLoading(completionBlock)
+var hideLoading = function hideLoading(completionBlock)
 {
     var loading = d3.select("#loading-container");
     loading.classed("hidden", true);
