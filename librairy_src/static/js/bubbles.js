@@ -11,23 +11,26 @@
 var bubbleHandler = function bubbleHandler(e)
 {
     var circleId = this.getAttribute('id');
+    var circleIdParsed = circleId.replace('circle-', '');
     var circle = d3.select('#' + circleId);
 
+    console.log(circleIdParsed);
+    console.log(domainsSelected);
     // Check if domain has been selected
-    if (domainsSelected.indexOf(circleId) > - 1)
+    if (circleIdParsed in domainsSelected)
     {
         circle.attr("class", "circle-column circle-buzz circle-fade");
-        var positionCircleId = domainsSelected.indexOf(circleId);
-        domainsSelected.splice(positionCircleId, 1);
+        delete domainsSelected[circleIdParsed];
     }
     else
     {
         circle.attr("class", "circle-column circle-selected");
-        domainsSelected.push(circleId);
+        domainsSelected[circleIdParsed] = circle.style("background-color");
     }
-    if (domainsSelected.length > 1)
-        showPanelDomains();
-    else hidePanelDomains();
+    console.log(domainsSelected);
+    if (Object.keys(domainsSelected).length > 1)
+        showButtonNav(0);
+    else hideButtonNav();
 };
 
 var createCircleRow = function createCircleRow()
@@ -87,10 +90,10 @@ var showCircles = function showCircles(domains)
     // Iterate to create circles or row if it is necessary
     for (var i = 0; i < domains.length; i++)
     {
-        domainsDict[domains[i]["container"]["id"]] = i;
+        domainsDict[domains[i]["id"]] = i;
         createCircle(
-            circleRow, domains[i]["container"]["name"],
-            domains[i]["container"]["id"], maxHeight,
+            circleRow, domains[i]["name"],
+            domains[i]["id"], maxHeight,
             (baseColour + (i * 41)) % 360
         );
         if (i < domains.length -1 && ++count == nRow)
