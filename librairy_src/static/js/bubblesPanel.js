@@ -17,6 +17,8 @@ sigma.classes.graph.addMethod('neighbors', function(nodeId)
     return neighbors;
 });
 
+var sigGraph = undefined;
+
 var showVizNetwork = function showVizNetwork(data)
 {
 
@@ -85,8 +87,8 @@ var showVizNetwork = function showVizNetwork(data)
     var filter = new sigma.plugins.filter(sigGraph);
     sigGraph.bind('clickNode', function(e) {
         var n = sigGraph.graph.neighbors(e.data.node.id);
-        filter.undo()
-            .nodesBy(function(node)
+        filter.undo().apply();
+        filter.nodesBy(function(node)
             {
                 return n.indexOf(node.id) > -1 || e.data.node.id == node.id;
             })
@@ -138,6 +140,8 @@ var getVisualizationsData = function getVisualizationsData()
                     var wrap = d3.select('#wrapper');
                     wrap.append('div').attr('id', 'wrapper-viz');
                     wrap.attr('class', 'loaded-viz');
+                    d3.select('header').attr('class', 'loaded-viz');
+                    d3.select('footer').attr('class', 'loaded-viz');
                     showVizNetwork(e);
                 }
                 showButtonNav(1);
@@ -153,6 +157,15 @@ var showBubblesPanel = function showBubblesPanel()
     hideErrorMessage();
     d3.select('#wrapper').attr('class', '');
     d3.select('#wrapper-viz').remove();
+    d3.select('header').attr('class', '');
+    d3.select('footer').attr('class', '');
+
+    if (sigGraph !== undefined)
+    {
+        sigGraph.kill();
+        sigGraph = undefined;
+        sigma.plugins.killActiveState();
+    }
 
     // Show bubbles again
     d3.select('#wrapper-container').style("display", "flex");
