@@ -24,6 +24,10 @@ header {
     order: 1;
 }
 
+header.loaded-viz {
+    border-bottom: 1px solid #EFEFEF;
+}
+
 .header-pic {
     height: 35px;
 }
@@ -136,6 +140,10 @@ footer {
     flex-basis: 50px;
     flex-shrink: 0;
     order: 3;
+}
+
+footer.loaded-viz {
+    border-top: 1px solid #EFEFEF;
 }
 
 footer > p {
