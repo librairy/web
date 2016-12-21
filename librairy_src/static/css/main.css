@@ -74,12 +74,25 @@ header {
     flex: 1 1 auto;
     order: 2;
     overflow: hidden;
+    position: relative;
 }
 
 #wrapper.loaded {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+#wrapper.loaded-viz {
+    background-color: #202020;
+}
+
+#wrapper-viz {
+    width: 100%;
+    height: 90%;
+    top: 5%;
+    left: 0;
+    position: absolute;
 }
 
 /* messages properties */

@@ -1,5 +1,5 @@
 #loading-container {
-    position: relative;
+    position: absolute;
     top: 60%;
     left: 50%;
     -webkit-transform: translate(-50%, -50%);
