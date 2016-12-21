@@ -16,6 +16,7 @@ import hashlib
 import random
 import config
 import cache
+import json
 import os
 
 
@@ -37,11 +38,8 @@ def create_compare_relations(compare_info):
            topic_key not in bad_relations and \
            topic_key_rev not in bad_relations:
 
-            # random value TODO: get real value
-            # 5 is good balance between few words and much words
-
-            v = random.randint(1, 100)
-            if v > 5:
+            v = float(comparison["score"])
+            if v > 0.002:
                 relations_return[topic_key] = v
             else:
                 bad_relations[topic_key] = v
@@ -71,8 +69,8 @@ def create_domain_relations(topics_info):
                     v = float(len(overlap)) / float(len(tkcwords))
                 v = int(v * 100)
 
-                # 5 is good balance between few words and much words
-                if v > 5:
+                # 25% is good balance between few words and much words
+                if v > 30:
                     relations_return[topic_key] = v
                 else:
                     bad_relations[topic_key] = v
@@ -86,8 +84,7 @@ def get_service_compare(request, domain_list):
 
     json_to_send = {
         'description': 'comparison',
-        'elements': [],
-        'max': 25
+        'elements': []
     }
     compare_id = ''
     for domain in domain_list:
@@ -107,6 +104,9 @@ def get_service_compare(request, domain_list):
                 json=json_to_send
             )
             if comp_info.status_code == 200:
+                config.flask_log.info(
+                    '[Service] Comparison ' + compare_id + ' done'
+                )
                 comp_info = comp_info.json()
             else:
                 config.logging_exception(request, comp_info)
@@ -141,6 +141,10 @@ def get_service_topic(request, domain_id, topic_id, topic_uri):
                 domain_id + '/topics/' + topic_id
             )
             if top_info.status_code == 200:
+                config.flask_log.info(
+                    '[Service] Downloaded Topic: ' + topic_id +
+                    ' from domain: ' + domain_id
+                )
                 top_info_return = top_info.json()
             else:
                 config.logging_exception(request, top_info)
@@ -180,9 +184,12 @@ def get_service_topics(request, domain_id):
     try:
         top_list = requests.get(
             config.SERVICE_LISTEN_URL + '/api/domains/' + domain_id +
-            '/topics?words=0&size=25'
+            '/topics?words=0'
         )
         if top_list.status_code == 200:
+            config.flask_log.info(
+                '[Service] Downloaded Topics from: ' + domain_id
+            )
             top_list = top_list.json()
         else:
             config.logging_exception(request, top_list)
@@ -234,6 +241,9 @@ def get_service_domain(request, domain_id):
                 config.SERVICE_LISTEN_URL + '/api/domains/' + domain_id
             )
             if dom_info.status_code == 200:
+                config.flask_log.info(
+                    '[Service] Downloaded Domain: ' + domain_id
+                )
                 dom_info_return = dom_info.json()
             else:
                 config.logging_exception(request, dom_info)
@@ -245,7 +255,11 @@ def get_service_domain(request, domain_id):
 
         # Save Domain to cache
         if len(dom_info_return):
+            dom_info_return['name'] = dom_info_return['container']['name']
+            dom_info_return['id'] = dom_info_return['container']['id']
+            del dom_info_return['container']
             cache.save_domain_cache(domain_id, dom_info_return)
+            dom_cache_status = 1
 
     # Return Domain
     return dom_info_return, dom_cache_status
