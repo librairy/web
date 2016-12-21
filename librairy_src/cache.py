@@ -38,6 +38,10 @@ CACHE_DB = {
     'topics': redis_create_pool(
         config.CACHE_REDIS_LISTEN_IP, config.CACHE_REDIS_LISTEN_PORT,
         config.CACHE_REDIS_PWD, 1
+    ),
+    'relations': redis_create_pool(
+        config.CACHE_REDIS_LISTEN_IP, config.CACHE_REDIS_LISTEN_PORT,
+        config.CACHE_REDIS_PWD, 2
     )
 }
 
@@ -47,9 +51,22 @@ CACHE_DB = {
 
 def clean_domain(domain_id):
     CACHE_DB['domains'].delete(domain_id)
+    CACHE_DB['relations'].delete(domain_id)
     topics_keys = CACHE_DB['topics'].keys(domain_id + '*')
     for topic_key in topics_keys:
         CACHE_DB['topics'].delete(topic_key)
+
+
+def get_domain_relations(domain_id):
+    if CACHE_DB['relations'].exists(domain_id):
+        return CACHE_DB['relations'].hgetall(domain_id)
+    else:
+        return None
+
+
+def save_domain_relations(domain_id, values):
+    CACHE_DB['relations'].hmset(domain_id, values)
+    CACHE_DB['relations'].expire(domain_id, config.CACHE_REDIS_TTL)
 
 
 def get_domain_cache(domain_id):
@@ -66,18 +83,11 @@ def save_domain_cache(domain_id, values):
 
 def get_topic_cache(topic_id):
     if CACHE_DB['topics'].exists(topic_id):
-        return {
-            'words': CACHE_DB['topics'].hgetall(topic_id),
-            'documents': int(
-                CACHE_DB['topics'].get(topic_id + ':documents')
-            )
-        }
+        CACHE_DB['topics'].hgetall(topic_id)
     else:
         return None
 
 
-def save_topic_cache(topic_id, words, docs):
+def save_topic_cache(topic_id, words):
     CACHE_DB['topics'].hmset(topic_id, words)
     CACHE_DB['topics'].expire(topic_id, config.CACHE_REDIS_TTL)
-    CACHE_DB['topics'].set(topic_id + ':documents', docs)
-    CACHE_DB['topics'].expire(topic_id + ':documents', config.CACHE_REDIS_TTL)
