@@ -4,7 +4,15 @@
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bubbles.css') }}">
 {% endblock %}
 {% block head_js %}
-<script type="text/javascript">var libTranslations={{ language_values|tojson }};</script>
+<script type="text/javascript">
+    var libTranslations={{ language_values|tojson }};
+    var domainsSelected = {};
+    var domainsValues = [];
+    var domainsDict = {};
+</script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/sigma.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/sigma.fa2.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/sigma.filter.min.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/d3.min.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/messages.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/bubblesPanel.js') }}"></script>
@@ -18,7 +26,7 @@
         // Load Domains
         d3.json('/endpoint/domains', function(e)
         {
-            hideLoadingDomains(function()
+            hideLoading(function()
             {
                 if (e === null)
                     showErrorMessage(1);
