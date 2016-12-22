@@ -91,12 +91,58 @@ header.loaded-viz {
     background-color: #202020;
 }
 
-#wrapper-viz {
+#wrapper-viz,
+#wrapper-selector {
     width: 100%;
     height: 90%;
     top: 5%;
     left: 0;
     position: absolute;
+}
+
+#wrapper-selector {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+/* visualizator */
+
+.box-viz {
+    height: 330px;
+    width: 290px;
+    margin: 0 80px;
+    border: 2px solid #efefef;
+    cursor: pointer;
+}
+
+.box-viz > div {
+    width: 100%;
+    position: relative;
+    height: 290px;
+    border-bottom: 1px solid #efefef;
+}
+
+.box-viz > p {
+    display: block;
+    float: left;
+    margin: 0;
+    padding: 0;
+    height: 40px;
+    text-align: center;
+    width: 100%;
+    color: #202020;
+    line-height: 40px;
+    font-size: 16px;
+    background-color: #fed136;
+    cursor: pointer;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 /* messages properties */

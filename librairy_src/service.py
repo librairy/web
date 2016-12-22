@@ -69,7 +69,7 @@ def create_domain_relations(topics_info):
                     v = float(len(overlap)) / float(len(tkcwords))
                 v = int(v * 100)
 
-                # 25% is good balance between few words and much words
+                # 30% is good balance between few words and much words
                 if v > 30:
                     relations_return[topic_key] = v
                 else:
