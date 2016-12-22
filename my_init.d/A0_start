@@ -1,0 +1,6 @@
+#!/bin/sh
+
+/usr/lib/librairy/.env/bin/pip install flask flask_negotiate requests redis
+/usr/lib/librairy/.env/bin/python librairy-web.py &
+mkfifo /var/log/librairy.log
+tail -f /var/log/librairy.log &
