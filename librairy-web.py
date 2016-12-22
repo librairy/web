@@ -72,12 +72,18 @@ def get_domains_compare():
     else:
         if not len(domains_list):
             return json_response(return_dict)
-        return_dict['external'] = service.get_service_compare(
-            request, domains_list
-        )
-        return_dict['internal'] = {
-            domain: service.get_service_topics(request, domain) for domain in domains_list
-        }
+        if 'internal' in request.args and request.args['internal'] == 'false':
+            return_dict['internal'] = {}
+        else:
+            return_dict['internal'] = {
+                domain: service.get_service_topics(request, domain) for domain in domains_list
+            }
+        if 'external' in request.args and request.args['external'] == 'false':
+            return_dict['external'] = {}
+        else:
+            return_dict['external'] = service.get_service_compare(
+                request, domains_list
+            )
         return json_response(return_dict)
 
 
@@ -112,9 +118,17 @@ def render_librairy_web():
             'en': 'Try again later',
             'es': 'Inténtelo más tarde'
         },
-        'but-viz': {
-            'en': 'Visualize domains',
-            'es': 'Visualizar dominios'
+        'but-sel': {
+            'en': 'Choose visualisation',
+            'es': 'Elegir visualización'
+        },
+        'but-san': {
+            'en': 'Cascade comparison',
+            'es': 'Comparación en cascada'
+        },
+        'but-net': {
+            'en': 'Facing domains',
+            'es': 'Dominios enfrentados'
         },
         'but-back': {
             'en': 'Back to domains',

@@ -1,4 +1,4 @@
-/*"""
+/*'''
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
   Copyright (C) 2016  Alejandro F. Carrera <alejfcarrera@mail.ru>
 
@@ -6,7 +6,7 @@
 
   Licensed under Apache License. See LICENSE for more info.
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
-"""*/
+'''*/
 
 var bubbleHandler = function bubbleHandler(e)
 {
@@ -17,13 +17,13 @@ var bubbleHandler = function bubbleHandler(e)
     // Check if domain has been selected
     if (circleIdParsed in domainsSelected)
     {
-        circle.attr("class", "circle-column circle-buzz circle-fade");
+        circle.attr('class', 'circle-column circle-buzz circle-fade');
         delete domainsSelected[circleIdParsed];
     }
     else
     {
-        circle.attr("class", "circle-column circle-selected");
-        domainsSelected[circleIdParsed] = circle.style("background-color");
+        circle.attr('class', 'circle-column circle-selected');
+        domainsSelected[circleIdParsed] = circle.style('background-color');
     }
 
     // Activate button if there are more than 2 selected
@@ -34,8 +34,8 @@ var bubbleHandler = function bubbleHandler(e)
 
 var createCircleRow = function createCircleRow()
 {
-    return d3.select("#wrapper-container")
-        .append("div").attr("class", "circle-row");
+    return d3.select('#wrapper-container')
+        .append('div').attr('class', 'circle-row');
 };
 
 var createCircle = function createCircle(row, text, identifier, height, hue)
@@ -46,11 +46,11 @@ var createCircle = function createCircle(row, text, identifier, height, hue)
     var colourFont = (L <= 0.18) ? 'white' : 'black';
 
     // Create circle with properties
-    var circle = row.append("div").attr("class", "circle-column circle-buzz circle-fade")
-        .attr("id", 'circle-' + identifier).style("height", height + "px")
-        .style("width", height + "px").style("background-color", color.toString())
-        .on("click", bubbleHandler);
-    circle.append("div").attr("class", "text").style("color", colourFont)
+    var circle = row.append('div').attr('class', 'circle-column circle-buzz circle-fade')
+        .attr('id', 'circle-' + identifier).style('height', height + 'px')
+        .style('width', height + 'px').style('background-color', color.toString())
+        .on('click', bubbleHandler);
+    circle.append('div').attr('class', 'text').style('color', colourFont)
         .text(text);
 };
 
@@ -58,10 +58,10 @@ var showCircles = function showCircles(domains)
 {
     domainsValues = domains;
 
-    var wrap = d3.select("#wrapper");
-    wrap.attr("class", "loaded circles");
-    var wrapBubbles = wrap.append("div")
-        .attr("id", "wrapper-container");
+    var wrap = d3.select('#wrapper');
+    wrap.attr('class', 'loaded circles');
+    var wrapBubbles = wrap.append('div')
+        .attr('id', 'wrapper-container');
 
     // Generate window constraints
     var nDomains = domains.length;
@@ -89,10 +89,10 @@ var showCircles = function showCircles(domains)
     // Iterate to create circles or row if it is necessary
     for (var i = 0; i < domains.length; i++)
     {
-        domainsDict[domains[i]["id"]] = i;
+        domainsDict[domains[i]['id']] = i;
         createCircle(
-            circleRow, domains[i]["name"],
-            domains[i]["id"], maxHeight,
+            circleRow, domains[i]['name'],
+            domains[i]['id'], maxHeight,
             (baseColour + (i * 41)) % 360
         );
         if (i < domains.length -1 && ++count == nRow)
@@ -107,5 +107,5 @@ var showCircles = function showCircles(domains)
     var wrapHeight = totalRows * (maxHeight + 48);
     wrapHeight = (wrapHeight < window.innerHeight - 200) ?
         wrapHeight = '100%' : wrapHeight + 'px';
-    wrapBubbles.style("height", wrapHeight);
+    wrapBubbles.style('height', wrapHeight);
 };
