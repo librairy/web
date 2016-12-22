@@ -301,7 +301,7 @@ var showSankeyVisualization = function showSankeyVisualization(data)
         if (nodesList.length > numberNode) numberNode = nodesList.length;
 
         // Create nodes for each domain
-        for (var i = 0; i < 15; i++)
+        for (var i = 0; i < nodesList.length; i++)
         {
             var nodeId = nodesList[i];
             var words = internalEdges[domain]['topics'][nodesList[i]].length;
@@ -318,7 +318,6 @@ var showSankeyVisualization = function showSankeyVisualization(data)
             }
         }
     }
-    numberNode = 15;
 
     // Create external links
     var sankeyLinks = [];
