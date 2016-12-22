@@ -19,11 +19,11 @@ var showVizPanel = function showVizPanel()
     d3.select('header').attr('class', 'loaded-viz');
     d3.select('footer').attr('class', 'loaded-viz');
     var boxOne = selector.append('div').attr('class', 'box-viz');
-    boxOne.append('div').attr('box-viz-img-san');
+    boxOne.append('div').attr('id', 'box-viz-img-san');
     boxOne.append('p').text(libTranslations['but-san']['es']);
     boxOne.on('click', showSankeyViz);
     var boxTwo = selector.append('div').attr('class', 'box-viz');
-    boxTwo.append('div').attr('box-viz-img-net');
+    boxTwo.append('div').attr('id', 'box-viz-img-net');
     boxTwo.append('p').text(libTranslations['but-net']['es']);
     boxTwo.on('click', showNetworkViz);
 };

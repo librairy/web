@@ -100,11 +100,66 @@ header.loaded-viz {
     position: absolute;
 }
 
+#wrapper-viz {
+    overflow-y: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 #wrapper-selector {
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
+}
+
+#box-viz-img-san {
+    background-image: url("../img/sankey@2x.png");
+    background-size: 290px 290px;
+    height: 290px;
+    width: 290px;
+}
+
+#box-viz-img-net {
+    background-image: url("../img/graph@2x.png");
+    background-size: 290px 290px;
+    height: 290px;
+    width: 290px;
+}
+
+@media only screen and (-webkit-min-device-pixel-ratio: 3),
+    only screen and (min-resolution: 3dppx),
+    only screen and (min-resolution: 350dpi)
+    {
+        #box-viz-img-san {
+            background-image: url("../img/sankey@3x.png");
+        }
+        #box-viz-img-net {
+            background-image: url("../img/graph@3x.png");
+        }
+    }
+
+/* svg properties */
+
+.node rect {
+    cursor: pointer;
+    fill-opacity: .9;
+    shape-rendering: crispEdges;
+}
+
+.node text {
+    pointer-events: none;
+    text-shadow: 0 1px 0 #fff;
+}
+
+.link {
+    fill: none;
+    stroke-opacity: .5;
+}
+
+.link:hover {
+    stroke-opacity: 1;
 }
 
 /* visualizator */
