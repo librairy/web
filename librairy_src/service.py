@@ -13,12 +13,11 @@
 import traceback
 import requests
 import hashlib
-import random
 import config
-import cache
-import json
 import os
 
+if config.CACHE_REDIS_ENABLED:
+    import cache
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
@@ -94,7 +93,10 @@ def get_service_compare(request, domain_list):
     json_to_send['name'] = compare_id
 
     # Get Comparison from cache
-    comp_info = cache.get_domain_compare(compare_id)
+    if config.CACHE_REDIS_ENABLED:
+        comp_info = cache.get_domain_compare(compare_id)
+    else:
+        comp_info = None
     if comp_info is None:
 
         # Get Domain comparison from service
@@ -118,7 +120,9 @@ def get_service_compare(request, domain_list):
 
         if len(comp_info):
             comp_info = create_compare_relations(comp_info['values'])
-            cache.save_domain_compare(compare_id, comp_info)
+
+            if config.CACHE_REDIS_ENABLED:
+                cache.save_domain_compare(compare_id, comp_info)
 
     return comp_info
 
@@ -126,9 +130,13 @@ def get_service_compare(request, domain_list):
 def get_service_topic(request, domain_id, topic_id, topic_uri):
 
     # Get Topic from cache if it is available
-    top_info_return = cache.get_topic_cache(
-        domain_id + ':' + topic_uri
-    )
+
+    if config.CACHE_REDIS_ENABLED:
+        top_info_return = cache.get_topic_cache(
+            domain_id + ':' + topic_uri
+        )
+    else:
+        top_info_return = None
 
     words_return = {}
 
@@ -164,9 +172,10 @@ def get_service_topic(request, domain_id, topic_id, topic_uri):
             }
 
             # Save
-            cache.save_topic_cache(
-                domain_id + ':' + topic_uri, words_return
-            )
+            if config.CACHE_REDIS_ENABLED:
+                cache.save_topic_cache(
+                    domain_id + ':' + topic_uri, words_return
+                )
 
         top_info_return = words_return
 
@@ -214,10 +223,13 @@ def get_service_topics(request, domain_id):
             top_list_return[top_uri] = top_info
 
     # Get Topic relations
-    top_relations = cache.get_domain_relations(domain_id)
+    if config.CACHE_REDIS_ENABLED:
+        top_relations = cache.get_domain_relations(domain_id)
+    else:
+        top_relations = None
     if top_relations is None:
         top_relations = create_domain_relations(top_list_return)
-        if len(top_relations):
+        if len(top_relations) and config.CACHE_REDIS_ENABLED:
             cache.save_domain_relations(domain_id, top_relations)
 
     # Return Topics
@@ -230,8 +242,12 @@ def get_service_topics(request, domain_id):
 def get_service_domain(request, domain_id):
 
     # Get Domain from cache if it is available
-    dom_info_return = cache.get_domain_cache(domain_id)
+    if config.CACHE_REDIS_ENABLED:
+        dom_info_return = cache.get_domain_cache(domain_id)
+    else:
+        dom_info_return = None
     dom_cache_status = 1
+
     if dom_info_return is None:
 
         dom_cache_status = 0
@@ -258,8 +274,10 @@ def get_service_domain(request, domain_id):
             dom_info_return['name'] = dom_info_return['container']['name']
             dom_info_return['id'] = dom_info_return['container']['id']
             del dom_info_return['container']
-            cache.save_domain_cache(domain_id, dom_info_return)
-            dom_cache_status = 1
+
+            if config.CACHE_REDIS_ENABLED:
+                cache.save_domain_cache(domain_id, dom_info_return)
+                dom_cache_status = 1
 
     # Return Domain
     return dom_info_return, dom_cache_status
@@ -292,7 +310,7 @@ def get_service_domains(request):
             dom_info, dom_st = get_service_domain(request, dom_id)
 
             # Clean all info about domains (domain does not exist at cache)
-            if dom_st == 0:
+            if dom_st == 0 and config.CACHE_REDIS_ENABLED:
                 cache.clean_domain(dom_id)
 
             # Save Domain information to return it
