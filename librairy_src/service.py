@@ -22,26 +22,41 @@ if config.CACHE_REDIS_ENABLED:
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 
-def create_compare_relations(compare_info):
+def create_compare_relations(compare_info, domains):
     relations_return = {}
     bad_relations = {}
     for comparison in compare_info:
-        source_key = comparison["source"]["container"]["id"] + ':' + \
-            comparison["source"]["element"]["id"]
-        destiny_key = comparison["end"]["container"]["id"] + ':' + \
-            comparison["end"]["element"]["id"]
-        topic_key = str(source_key) + '_' + str(destiny_key)
-        topic_key_rev = str(destiny_key) + '_' + str(source_key)
-        if topic_key not in relations_return and \
-           topic_key_rev not in relations_return and \
-           topic_key not in bad_relations and \
-           topic_key_rev not in bad_relations:
 
-            v = float(comparison["score"])
-            if v > 0.002:
-                relations_return[topic_key] = v
-            else:
-                bad_relations[topic_key] = v
+        # Get information about source
+        source_domain = comparison["source"]["container"]["id"]
+        source_position = domains.index(source_domain)
+        source_key = source_domain + ':' + \
+            comparison["source"]["element"]["id"]
+
+        # Get information about target
+        target_domain = comparison["end"]["container"]["id"]
+        target_position = domains.index(target_domain)
+        target_key = target_domain + ':' + \
+            comparison["end"]["element"]["id"]
+
+        # Only consecutive levels
+        if abs(source_position - target_position) == 1:
+
+            # Interchange keys if link is reversed
+            if target_position == source_position - 1:
+                tmp_key = source_key
+                source_key = target_key
+                target_key = tmp_key
+
+            topic_key = str(source_key) + '_' + str(target_key)
+            if topic_key not in relations_return and \
+               topic_key not in bad_relations:
+
+                v = float(comparison["score"])
+                if v > 0.002:
+                    relations_return[topic_key] = v
+                else:
+                    bad_relations[topic_key] = v
 
     return relations_return
 
@@ -119,7 +134,10 @@ def get_service_compare(request, domain_list):
             comp_info = {}
 
         if len(comp_info):
-            comp_info = create_compare_relations(comp_info['values'])
+            comp_info = create_compare_relations(
+                comp_info['values'],
+                domain_list
+            )
 
             if config.CACHE_REDIS_ENABLED:
                 cache.save_domain_compare(compare_id, comp_info)

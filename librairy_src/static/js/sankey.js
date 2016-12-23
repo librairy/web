@@ -34,14 +34,14 @@ d3.sankey = function()
         if (!arguments.length) return maxNodeHeight;
         maxNodeHeight = _;
         return sankey;
-    }
+    };
 
     sankey.maxNodeWords = function(_)
     {
         if (!arguments.length) return maxNodeWords;
         maxNodeWords = _;
         return sankey;
-    }
+    };
 
     sankey.nodeNumber = function(_)
     {
@@ -145,7 +145,7 @@ d3.sankey = function()
     var computeNodeBreadths = function computeNodeBreadths()
     {
         var nodesByBreadth = d3.nest()
-            .key(function(d) { return d.y; })
+            .key(function(d) { return d.domain; })
             .sortKeys(d3.ascending)
             .entries(nodes)
             .map(function(d) { return d.values; });
@@ -160,20 +160,7 @@ d3.sankey = function()
             });
         });
 
-        relaxLeftToRight(1);
         resolveCollisions();
-
-        function relaxLeftToRight(a)
-        {
-            nodesByBreadth.forEach(function(nodes, breadth)
-            {
-                nodes.forEach(function(node)
-                {
-                    if (node.targetLinks.length)
-                        node.x += (- center(node)) * a;
-                });
-            });
-        }
 
         function resolveCollisions()
         {
@@ -215,44 +202,13 @@ d3.sankey = function()
         }
     };
 
-    // move to bottom
-    var moveSinksDown = function moveSinksDown(y)
-    {
-        nodes.forEach(function(node)
-        {
-            if (!node.sourceLinks.length)
-                node.y = y - 1;
-        });
-    };
-
-    // shift their locations out to occupy the screen
-    var scaleNodeBreadths = function scaleNodeBreadths(kx)
-    {
-        nodes.forEach(function(node)
-        {
-            node.y *= kx;
-        });
-    };
-
     var computeNodeDepths = function computeNodeDepths() {
-        var remainingNodes = nodes, nextNodes, y = 0;
-        while (remainingNodes.length)
+        var remainingNodes = nodes;
+        var k = (size[1] - nodeWidth) / (domainsOrder.length - 1);
+        remainingNodes.forEach(function(node)
         {
-            nextNodes = [];
-            remainingNodes.forEach(function(node)
-            {
-                node.y = y;
-                node.sourceLinks.forEach(function(link)
-                {
-                    if (nextNodes.indexOf(link.target) < 0)
-                        nextNodes.push(link.target);
-                });
-            });
-            remainingNodes = nextNodes;
-            ++y;
-        }
-        moveSinksDown(y);
-        scaleNodeBreadths((size[1] - nodeWidth) / (y - 1));
+            node.y = domainsOrder.indexOf(node.domain) * k;
+        });
     };
 
     var computeLinkDepths = function computeLinkDepths()
@@ -274,11 +230,6 @@ d3.sankey = function()
         }
     };
 
-    var center = function center(node)
-    {
-        return node.y + node.dy / 2;
-    };
-
     return sankey;
 };
 
@@ -291,20 +242,22 @@ var showSankeyVisualization = function showSankeyVisualization(data)
     var internalEdges = data['internal'];
 
     var sankeyNodes = [];
+    var sankeyLinks = [];
     var sankeyAlready = {};
     var numberNode = 0;
     var numberWords = 0;
     var countNodes = 0;
-    for (var domain in domainsSelected)
+    for (var k = 0; k < domainsOrder.length; k++)
     {
+        var domain = domainsOrder[k];
         var nodesList = Object.keys(internalEdges[domain]['topics']);
         if (nodesList.length > numberNode) numberNode = nodesList.length;
 
         // Create nodes for each domain
-        for (var i = 0; i < nodesList.length; i++)
+        for (var j = 0; j < nodesList.length; j++)
         {
-            var nodeId = nodesList[i];
-            var words = internalEdges[domain]['topics'][nodesList[i]].length;
+            var nodeId = nodesList[j];
+            var words = internalEdges[domain]['topics'][nodesList[j]].length;
             if (words > numberWords) numberWords = words;
             if (!(nodeId in sankeyAlready))
             {
@@ -312,29 +265,26 @@ var showSankeyVisualization = function showSankeyVisualization(data)
                 sankeyNodes.push({
                     'name': nodeId,
                     'words': words,
+                    'domain': domain,
                     'color': domainsSelected[domain]
-                })
+                });
                 countNodes++;
             }
         }
     }
 
-    // Create external links
-    var sankeyLinks = [];
-    for (var i = 0; i < externalEdgesIds.length; i++)
+    while (externalEdgesIds.length > 0)
     {
-        var eId = externalEdgesIds[i].split('_');
-        if (eId[0].split(':')[1] in sankeyAlready && eId[1].split(':')[1] in sankeyAlready)
-        {
-            var sId = sankeyAlready[eId[0].split(':')[1]];
-            var tId = sankeyAlready[eId[1].split(':')[1]];
-            sankeyLinks.push({
-                'source': (sId < tId) ? sId : tId,
-                'target': (tId > sId) ? tId : sId
-            });
-        }
+        var nodeLink = externalEdgesIds.pop().split('_');
+        var sourceNodeLink = nodeLink[0].split(':');
+        var targetNodeLink = nodeLink[1].split(':');
+        sankeyLinks.push({
+            'source': sankeyAlready[sourceNodeLink[1]],
+            'target': sankeyAlready[targetNodeLink[1]]
+        });
     }
 
+    // Create external links
     var widthNode = (window.innerWidth + (numberNode * 2))/(2 * numberNode);
     var widthViz = (numberNode * widthNode) + ((numberNode - 1) * (widthNode - 2));
     var heightViz = (window.innerHeight - 200);
@@ -375,6 +325,7 @@ var showSankeyVisualization = function showSankeyVisualization(data)
         .data(sankeyNodes)
         .enter().append('g')
         .attr('class', 'node')
+        .attr('opacity', 0.8)
         .attr('transform', function(d)
         {
             return 'translate(' + d.x + ',' + d.y + ')';
@@ -391,45 +342,80 @@ var showSankeyVisualization = function showSankeyVisualization(data)
 
     var nodeActive = undefined;
 
-    function clickNode(d)
+    function clickNode(node)
     {
         restoreNodes();
         restoreLinks();
 
-        if (nodeActive !== undefined && nodeActive == d.name)
+        if (nodeActive !== undefined && nodeActive == node.name)
         {
             nodeActive = undefined;
-            return;
         }
+        else
+        {
+            hideLinks();
 
-        nodeActive = d.name;
-        var nodesToShow = {};
-        nodesToShow[d.name] = 1;
-        d3.selectAll('.link').each(function(l, i)
-        {
-            if (l.source.name != d.name)
+            var remainingNodes=[], nextNodes=[];
+
+            var traverse = [{
+                linkType : "sourceLinks",
+                nodeType : "target"
+            }, {
+                linkType : "targetLinks",
+                nodeType : "source"
+            }];
+
+            traverse.forEach(function(step)
             {
-                d3.select(this).attr('opacity', 0.1)
-                nodesToShow[l.target.name] = 1;
-            }
-        });
-        d3.selectAll('.node').each(function(n, i)
-        {
-            if (!(n.name in nodesToShow))
+                node[step.linkType].forEach(function(link)
+                {
+                    var l = link[step.nodeType];
+                    remainingNodes.push(l);
+                    var ld = getLink(link.source.name, link.target.name);
+                    ld.attr('display', 'block');
+                });
+
+                while (remainingNodes.length)
+                {
+                    nextNodes = [];
+                    remainingNodes.forEach(function(node)
+                    {
+                        node[step.linkType].forEach(function(link)
+                        {
+                            nextNodes.push(link[step.nodeType]);
+                            var ld = getLink(link.source.name, link.target.name);
+                            ld.attr('display', 'block');
+                        });
+                    });
+                    remainingNodes = nextNodes;
+                }
+            });
+
+            function getLink(node_source, node_target)
             {
-                d3.select(this).attr('opacity', 0.1)
+                return d3.selectAll('.link').filter(function(l, i)
+                {
+                    return l.source.name === node_source && l.target.name == node_target;
+                });
             }
-        });
+
+            nodeActive = node.name;
+        }
     }
 
     function restoreNodes()
     {
-        d3.selectAll('.node').attr('opacity', 1);
+        d3.selectAll('.node').attr('opacity', 0.8)
     }
 
     function restoreLinks()
     {
-        d3.selectAll('.link').attr('opacity', 1);
+        d3.selectAll('.link').attr('display', 'block');
+    }
+
+    function hideLinks()
+    {
+        d3.selectAll('.link').attr('display', 'none');
     }
 
 };
