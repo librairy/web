@@ -12,7 +12,7 @@ var addEmptyMessage = function addEmptyMessage()
 {
     var wrap = d3.select('#wrapper')
         .append('div').attr('id', 'wrapper-error');
-    wrap.append('img');
+    wrap.append('div').attr('class', 'wrapper-error-img');
     wrap.append('p').text(libTranslations['msg-empty']['es']);
     wrap.append('p').attr('class', 'subline')
         .text(libTranslations['msg-try']['es']);
@@ -22,7 +22,7 @@ var addConnectionMessage = function addConnectionMessage()
 {
     var wrap = d3.select('#wrapper')
         .append('div').attr('id', 'wrapper-error');
-    wrap.append('img');
+    wrap.append('div').attr('class', 'wrapper-error-img');
     wrap.append('p').text(libTranslations['msg-connection']['es']);
     wrap.append('p').attr('class', 'subline')
         .text(libTranslations['msg-try']['es']);

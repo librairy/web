@@ -217,7 +217,7 @@ header.loaded-viz {
     width: 500px;
 }
 
-#wrapper-error > img {
+#wrapper-error > .wrapper-error-img {
     background: rgba(0, 0, 0, 0) url("../img/books.svg") repeat scroll 0 0 / 100% 100%;
     display: block;
     height: 45%;
