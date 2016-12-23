@@ -19,11 +19,14 @@ var bubbleHandler = function bubbleHandler(e)
     {
         circle.attr('class', 'circle-column circle-buzz circle-fade');
         delete domainsSelected[circleIdParsed];
+        var circlePos = domainsOrder.indexOf(circleIdParsed);
+        domainsOrder.splice(circlePos, 1);
     }
     else
     {
         circle.attr('class', 'circle-column circle-selected');
         domainsSelected[circleIdParsed] = circle.style('background-color');
+        domainsOrder.push(circleIdParsed);
     }
 
     // Activate button if there are more than 2 selected
