@@ -393,6 +393,9 @@ var showSankeyVisualization = function showSankeyVisualization(data)
                 }
             });
 
+            nodeActive = node.name;
+            getNode(node.name).attr('opacity', 0.8);
+
             function getNode(node_name)
             {
                 return d3.selectAll('.node').filter(function(n, i)
@@ -408,8 +411,8 @@ var showSankeyVisualization = function showSankeyVisualization(data)
                     return l.source.name === node_source && l.target.name == node_target;
                 });
             }
-            
-            nodeActive = node.name;
+
+
         }
     }
 
