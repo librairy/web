@@ -354,6 +354,7 @@ var showSankeyVisualization = function showSankeyVisualization(data)
         else
         {
             hideLinks();
+            hideNodes();
 
             var remainingNodes=[], nextNodes=[];
 
@@ -369,10 +370,10 @@ var showSankeyVisualization = function showSankeyVisualization(data)
             {
                 node[step.linkType].forEach(function(link)
                 {
-                    var l = link[step.nodeType];
-                    remainingNodes.push(l);
-                    var ld = getLink(link.source.name, link.target.name);
-                    ld.attr('display', 'block');
+                    remainingNodes.push(link[step.nodeType]);
+                    getNode(link.source.name).attr('opacity', 0.8);
+                    getNode(link.target.name).attr('opacity', 0.8);
+                    getLink(link.source.name, link.target.name).attr('display', 'block');
                 });
 
                 while (remainingNodes.length)
@@ -383,13 +384,22 @@ var showSankeyVisualization = function showSankeyVisualization(data)
                         node[step.linkType].forEach(function(link)
                         {
                             nextNodes.push(link[step.nodeType]);
-                            var ld = getLink(link.source.name, link.target.name);
-                            ld.attr('display', 'block');
+                            getNode(link.source.name).attr('opacity', 0.8);
+                            getNode(link.target.name).attr('opacity', 0.8);
+                            getLink(link.source.name, link.target.name).attr('display', 'block');
                         });
                     });
                     remainingNodes = nextNodes;
                 }
             });
+
+            function getNode(node_name)
+            {
+                return d3.selectAll('.node').filter(function(n, i)
+                {
+                    return n.name === node_name;
+                });
+            }
 
             function getLink(node_source, node_target)
             {
@@ -398,7 +408,7 @@ var showSankeyVisualization = function showSankeyVisualization(data)
                     return l.source.name === node_source && l.target.name == node_target;
                 });
             }
-
+            
             nodeActive = node.name;
         }
     }
@@ -406,6 +416,11 @@ var showSankeyVisualization = function showSankeyVisualization(data)
     function restoreNodes()
     {
         d3.selectAll('.node').attr('opacity', 0.8)
+    }
+
+    function hideNodes()
+    {
+        d3.selectAll('.node').attr('opacity', 0.1);
     }
 
     function restoreLinks()
