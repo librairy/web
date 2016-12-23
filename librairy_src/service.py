@@ -304,7 +304,7 @@ def get_service_domains(request):
     # Get Domain information for each id
     for dom in dom_list:
         dom_id = dom.get('id', '')
-        if dom_id != 'default' and dom_id != '':
+        if dom_id != '':
 
             # Get Information from cache
             dom_info, dom_st = get_service_domain(request, dom_id)
