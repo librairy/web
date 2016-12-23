@@ -12,6 +12,12 @@ body {
     flex-direction: column;
 }
 
+canvas, svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
 /* header properties */
 
 header {
