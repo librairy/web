@@ -156,7 +156,7 @@ d3.sankey = function()
             {
                 node.x = i;
                 node.pad = nodePadding;
-                node.dy = maxNodeHeight * (node.words / maxNodeWords);
+                node.dy = maxNodeHeight * (node.words.length / maxNodeWords);
             });
         });
 
@@ -257,8 +257,8 @@ var showSankeyVisualization = function showSankeyVisualization(data)
         for (var j = 0; j < nodesList.length; j++)
         {
             var nodeId = nodesList[j];
-            var words = internalEdges[domain]['topics'][nodesList[j]].length;
-            if (words > numberWords) numberWords = words;
+            var words = internalEdges[domain]['topics'][nodesList[j]];
+            if (words.length > numberWords) numberWords = words.length;
             if (!(nodeId in sankeyAlready))
             {
                 sankeyAlready[nodeId] = countNodes;
@@ -341,20 +341,32 @@ var showSankeyVisualization = function showSankeyVisualization(data)
         .text(function(d) { return '\n' + d.name + '\n'; });
 
     var nodeActive = undefined;
+    var nodeActiveLinksIds = [];
+    var nodeActiveLinksValues = {};
 
     function clickNode(node)
     {
-        restoreNodes();
-        restoreLinks();
 
-        if (nodeActive !== undefined && nodeActive == node.name)
+        if (nodeActive !== undefined && nodeActive.name == node.name)
         {
-            nodeActive = undefined;
+            if (d3.select('#info-panel').size() > 0)
+            {
+                restoreLinks();
+                restoreNodes();
+                hidePanelNode();
+                nodeActiveLinksIds = [];
+                nodeActiveLinksValues = {};
+                nodeActive = undefined;
+            }
+            else showPanelNode(nodeActive, nodeActiveLinksIds, nodeActiveLinksValues);
         }
         else
         {
+
             hideLinks();
             hideNodes();
+            nodeActiveLinksIds = [];
+            nodeActiveLinksValues = {};
 
             var remainingNodes=[], nextNodes=[];
 
@@ -366,6 +378,22 @@ var showSankeyVisualization = function showSankeyVisualization(data)
                 nodeType : "source"
             }];
 
+            function getNode(node_name)
+            {
+                return d3.selectAll('.node').filter(function(n, i)
+                {
+                    return n.name === node_name;
+                });
+            }
+
+            function getLink(node_source, node_target)
+            {
+                return d3.selectAll('.link').filter(function(l, i)
+                {
+                    return l.source.name === node_source && l.target.name == node_target;
+                });
+            }
+
             traverse.forEach(function(step)
             {
                 node[step.linkType].forEach(function(link)
@@ -373,6 +401,24 @@ var showSankeyVisualization = function showSankeyVisualization(data)
                     remainingNodes.push(link[step.nodeType]);
                     getNode(link.source.name).attr('opacity', 0.8);
                     getNode(link.target.name).attr('opacity', 0.8);
+                    if (link.source.name === node.name)
+                    {
+                        if (!(link.target.name in nodeActiveLinksValues))
+                        {
+                            nodeActiveLinksValues[link.target.name] = link.target;
+                            nodeActiveLinksValues[link.target.name]['label'] = link.target.name;
+                            nodeActiveLinksIds.push(link.target.name);
+                        }
+                    }
+                    else if (link.target.name === node.name)
+                    {
+                        if (!(link.source.name in nodeActiveLinksValues))
+                        {
+                            nodeActiveLinksValues[link.source.name] = link.source;
+                            nodeActiveLinksValues[link.source.name]['label'] = link.source.name;
+                            nodeActiveLinksIds.push(link.source.name);
+                        }
+                    }
                     getLink(link.source.name, link.target.name).attr('display', 'block');
                 });
 
@@ -393,26 +439,14 @@ var showSankeyVisualization = function showSankeyVisualization(data)
                 }
             });
 
-            nodeActive = node.name;
+
+            nodeActive = node;
             getNode(node.name).attr('opacity', 0.8);
 
-            function getNode(node_name)
-            {
-                return d3.selectAll('.node').filter(function(n, i)
-                {
-                    return n.name === node_name;
-                });
-            }
-
-            function getLink(node_source, node_target)
-            {
-                return d3.selectAll('.link').filter(function(l, i)
-                {
-                    return l.source.name === node_source && l.target.name == node_target;
-                });
-            }
-
-
+            // Reverse ids because is bottom to up
+            nodeActiveLinksIds.reverse();
+            
+            showPanelNode(nodeActive, nodeActiveLinksIds, nodeActiveLinksValues);
         }
     }
 
@@ -453,6 +487,7 @@ var hideSankeyViz = function hideSankeyViz(error)
     hideButtonNav();
     showButtonNav(0);
     hideErrorMessage();
+    hidePanelNode();
 
     if (!error)
     {
