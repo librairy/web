@@ -27,40 +27,6 @@ sigma.classes.graph.addMethod('neighbors', function(nodeId)
 var sigGraph = undefined;
 var selectedNode = undefined;
 
-var showSigmaPanel = function showSigmaPanel(node, linksIds, linksValues)
-{
-    hideSigmaPanel();
-    var wrap = d3.select('#wrapper');
-    var panel = wrap.append('div').attr('id', 'info-panel');
-    var header = panel.append('div').attr('class', 'info-panel-header').append('p');
-    header.text(node.label);
-    header.style('color', node.color);
-    var subHeaderW = panel.append('div').attr('class', 'info-panel-header info-panel-sub-header');
-    subHeaderW.append('p').text(libTranslations['header-words']['es']);
-    var wordsPanel = panel.append('div').attr('class', 'info-panel-scroll')
-        .append('div').attr('class', 'info-panel-scroll-container');
-    for (var i = 0; i < node.words.length; i++)
-    {
-        wordsPanel.append('p').attr('class', 'info-panel-scroll-cell')
-            .text(i + ". " + node.words[i]);
-    }
-    var subHeaderL = panel.append('div').attr('class', 'info-panel-header info-panel-sub-header');
-    subHeaderL.append('p').text(libTranslations['header-links']['es']);
-    var linksPanel = panel.append('div').attr('class', 'info-panel-scroll')
-        .append('div').attr('class', 'info-panel-scroll-container');
-    for (var i = 0; i < linksIds.length; i++)
-    {
-        linksPanel.append('p').attr('class', 'info-panel-scroll-cell')
-            .text(linksValues[linksIds[i]].label)
-            .style('color', linksValues[linksIds[i]].color);
-    }
-};
-
-var hideSigmaPanel = function hideSigmaPanel()
-{
-    d3.select('#info-panel').remove();
-};
-
 var showSigmaVisualization = function showSigmaVisualization(data)
 {
 
@@ -136,28 +102,36 @@ var showSigmaVisualization = function showSigmaVisualization(data)
         {
             if (typeof selectedNode !== 'undefined')
             {
-                if (selectedNode === e.data.node.id) return;
+                if (selectedNode.id === e.data.node.id)
+                {
+                    if (d3.select('#info-panel').size() === 0)
+                    {
+                        var tempNodes = sigGraph.graph.neighbors(selectedNode.id);
+                        showPanelNode(selectedNode, tempNodes.ids, tempNodes.values);
+                    }
+                    return;
+                }
             }
-            selectedNode = e.data.node.id;
+            selectedNode = e.data.node;
 
             // Clean sigma graph
             filter.undo().apply();
 
             // Get neighbors from Node
-            var nodes = sigGraph.graph.neighbors(selectedNode);
+            var nodes = sigGraph.graph.neighbors(selectedNode.id);
 
             // Show information panel
-            showSigmaPanel(e.data.node, nodes.ids, nodes.values);
+            showPanelNode(selectedNode, nodes.ids, nodes.values);
 
             if (nodes.ids.length === 0) return;
 
             filter.nodesBy(function(node)
             {
-                return nodes.ids.indexOf(node.id) > -1 || node.id === selectedNode;
+                return nodes.ids.indexOf(node.id) > -1 || node.id === selectedNode.id;
             })
             .edgesBy(function(edge)
             {
-                return edge.source === selectedNode || edge.target === selectedNode;
+                return edge.source === selectedNode.id || edge.target === selectedNode.id;
             })
             .apply();
 
@@ -168,7 +142,7 @@ var showSigmaVisualization = function showSigmaVisualization(data)
         {
             filter.undo().apply();
             selectedNode = undefined;
-            hideSigmaPanel();
+            hidePanelNode();
         });
     }
 
@@ -205,7 +179,7 @@ var hideNetworkViz = function hideNetworkViz(error)
     hideButtonNav();
     showButtonNav(0);
     hideErrorMessage();
-    hideSigmaPanel();
+    hidePanelNode();
 
     if (!error)
     {

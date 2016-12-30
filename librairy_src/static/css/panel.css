@@ -8,7 +8,7 @@
     position: absolute;
     right: 5px;
     top: 8px;
-    height: 493px;
+    height: 534px;
     border-radius: 2px;
     border: 1px solid white;
     z-index: 1000;
@@ -84,4 +84,18 @@
     text-overflow: ellipsis;
     line-height: 30px;
     cursor: default;
+}
+
+/* button view */
+
+#info-panel-close {
+    text-align: center;
+    color: #202020;
+    background-color: #FED136;
+    height: 40px;
+    width: 100%;
+    font-size: 18px;
+    line-height: 40px;
+    border-top: 1px solid white;
+    cursor: pointer;
 }

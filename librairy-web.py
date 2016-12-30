@@ -134,13 +134,17 @@ def render_librairy_web():
             'en': 'Back to domains',
             'es': 'Volver al menú'
         },
-        'header-words': {
+        'panel-header-words': {
             'en': 'WORDS',
             'es': 'PALABRAS'
         },
-        'header-links': {
+        'panel-header-links': {
             'en': 'LINKS',
             'es': 'CONEXIONES'
+        },
+        'panel-button': {
+            'en': 'Close panel',
+            'es': 'Cerrar panel'
         }
     })
 
