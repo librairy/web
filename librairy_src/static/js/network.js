@@ -11,23 +11,65 @@
 // Custom function to get neighbors from specific node
 sigma.classes.graph.addMethod('neighbors', function(nodeId)
 {
-    var k, neighbors = [], index = this.allNeighborsIndex[nodeId] || {};
+    var k, neighbors = {}, neighborsIds = [],
+        index = this.allNeighborsIndex[nodeId] || {};
     for (k in index)
-        neighbors.push(this.nodesIndex[k].id);
-    return neighbors;
+    {
+        neighborsIds.push(this.nodesIndex[k].id);
+        neighbors[this.nodesIndex[k].id] = {
+            'label': this.nodesIndex[k].label,
+            'color': this.nodesIndex[k].color
+        };
+    }
+    return {'ids': neighborsIds, 'values': neighbors};
 });
 
 var sigGraph = undefined;
+var selectedNode = undefined;
+
+var showSigmaPanel = function showSigmaPanel(node, linksIds, linksValues)
+{
+    hideSigmaPanel();
+    var wrap = d3.select('#wrapper');
+    var panel = wrap.append('div').attr('id', 'info-panel');
+    var header = panel.append('div').attr('class', 'info-panel-header').append('p');
+    header.text(node.label);
+    header.style('color', node.color);
+    var subHeaderW = panel.append('div').attr('class', 'info-panel-header info-panel-sub-header');
+    subHeaderW.append('p').text(libTranslations['header-words']['es']);
+    var wordsPanel = panel.append('div').attr('class', 'info-panel-scroll')
+        .append('div').attr('class', 'info-panel-scroll-container');
+    for (var i = 0; i < node.words.length; i++)
+    {
+        wordsPanel.append('p').attr('class', 'info-panel-scroll-cell')
+            .text(i + ". " + node.words[i]);
+    }
+    var subHeaderL = panel.append('div').attr('class', 'info-panel-header info-panel-sub-header');
+    subHeaderL.append('p').text(libTranslations['header-links']['es']);
+    var linksPanel = panel.append('div').attr('class', 'info-panel-scroll')
+        .append('div').attr('class', 'info-panel-scroll-container');
+    for (var i = 0; i < linksIds.length; i++)
+    {
+        linksPanel.append('p').attr('class', 'info-panel-scroll-cell')
+            .text(linksValues[linksIds[i]].label)
+            .style('color', linksValues[linksIds[i]].color);
+    }
+};
+
+var hideSigmaPanel = function hideSigmaPanel()
+{
+    d3.select('#info-panel').remove();
+};
 
 var showSigmaVisualization = function showSigmaVisualization(data)
 {
 
     // Create Sigma Object
-    var sigGraph = new sigma({
+    sigGraph = new sigma({
         container: 'wrapper-viz',
         settings: {
             drawEdges: false,
-            drawLabels: true,
+            drawLabels: false,
             edgeHoverColor: "default",
             defaultEdgeHoverColor: "#202020",
             labelThreshold: 9
@@ -48,9 +90,11 @@ var showSigmaVisualization = function showSigmaVisualization(data)
         for (var i = 0; i < nodesList.length; i++)
         {
             var nodeId = nodesList[i];
+            var nodeWords = internalEdges[domain]['topics'][nodesList[i]];
             sigGraph.graph.addNode({
                 id: nodeId,
                 label: nodeId,
+                words: nodeWords,
                 x: Math.random(),
                 y: Math.random(),
                 size: Math.random() * 10,
@@ -59,7 +103,7 @@ var showSigmaVisualization = function showSigmaVisualization(data)
         }
 
         // Create edges for each domain (internal links)
-        for (var i = 0; i < edgesList.length; i++)
+        for (i = 0; i < edgesList.length; i++)
         {
             var edge = edgesList[i].split(":");
             sigGraph.graph.addEdge({
@@ -72,7 +116,7 @@ var showSigmaVisualization = function showSigmaVisualization(data)
     }
 
     // Create external links
-    for (var i = countEdge; i < externalEdgesIds.length + countEdge; i++)
+    for (i = countEdge; i < externalEdgesIds.length + countEdge; i++)
     {
         var p = i - countEdge;
         var eId = externalEdgesIds[p].split("_");
@@ -83,25 +127,50 @@ var showSigmaVisualization = function showSigmaVisualization(data)
         });
     }
 
-    // Show neighbors when user click on node
-    var filter = new sigma.plugins.filter(sigGraph);
-    sigGraph.bind('clickNode', function(e)
+    // Active events when Atlas is stopped
+    function activeSigmaEvents()
     {
-        var n = sigGraph.graph.neighbors(e.data.node.id);
-        filter.undo().apply();
-        filter.nodesBy(function(node)
+        // Show neighbors when user click on node
+        var filter = new sigma.plugins.filter(sigGraph);
+        sigGraph.bind('clickNode', function(e)
+        {
+            if (typeof selectedNode !== 'undefined')
             {
-                return n.indexOf(node.id) > -1 || e.data.node.id == node.id;
+                if (selectedNode === e.data.node.id) return;
+            }
+            selectedNode = e.data.node.id;
+
+            // Clean sigma graph
+            filter.undo().apply();
+
+            // Get neighbors from Node
+            var nodes = sigGraph.graph.neighbors(selectedNode);
+
+            // Show information panel
+            showSigmaPanel(e.data.node, nodes.ids, nodes.values);
+
+            if (nodes.ids.length === 0) return;
+
+            filter.nodesBy(function(node)
+            {
+                return nodes.ids.indexOf(node.id) > -1 || node.id === selectedNode;
             })
             .edgesBy(function(edge)
             {
-                return edge.source == e.data.node.id || edge.target == e.data.node.id;
+                return edge.source === selectedNode || edge.target === selectedNode;
             })
             .apply();
-    });
-    sigGraph.bind('clickStage', function(e) {
-        filter.undo().apply();
-    });
+
+        });
+
+        // Show all nodes and edges
+        sigGraph.bind('clickStage', function()
+        {
+            filter.undo().apply();
+            selectedNode = undefined;
+            hideSigmaPanel();
+        });
+    }
 
     // Generate ForceAtlas during 10 seconds
     sigGraph.startForceAtlas2({
@@ -115,7 +184,9 @@ var showSigmaVisualization = function showSigmaVisualization(data)
     {
         sigGraph.stopForceAtlas2();
         sigGraph.settings('drawEdges', true);
+        sigGraph.settings('drawLabels', true);
         sigGraph.refresh();
+        activeSigmaEvents();
     }, 10000);
 };
 
@@ -134,6 +205,7 @@ var hideNetworkViz = function hideNetworkViz(error)
     hideButtonNav();
     showButtonNav(0);
     hideErrorMessage();
+    hideSigmaPanel();
 
     if (!error)
     {
@@ -146,7 +218,6 @@ var hideNetworkViz = function hideNetworkViz(error)
         {
             sigGraph.kill();
             sigGraph = undefined;
-            sigma.plugins.killActiveState();
         }
     }
 

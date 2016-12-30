@@ -133,6 +133,14 @@ def render_librairy_web():
         'but-back': {
             'en': 'Back to domains',
             'es': 'Volver al menú'
+        },
+        'header-words': {
+            'en': 'WORDS',
+            'es': 'PALABRAS'
+        },
+        'header-links': {
+            'en': 'LINKS',
+            'es': 'CONEXIONES'
         }
     })
 
