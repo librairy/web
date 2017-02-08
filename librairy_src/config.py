@@ -20,7 +20,7 @@ from time import strftime
 # GENERAL
 
 shortname = 'librairy'
-version = '1.0.3'
+version = '1.0.4'
 longname = 'Librairy Web'
 
 # FLASK

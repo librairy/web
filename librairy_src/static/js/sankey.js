@@ -275,12 +275,12 @@ var showSankeyVisualization = function showSankeyVisualization(data)
 
     while (externalEdgesIds.length > 0)
     {
-        var nodeLink = externalEdgesIds.pop().split('_');
-        var sourceNodeLink = nodeLink[0].split(':');
-        var targetNodeLink = nodeLink[1].split(':');
+        var nodeLink = externalEdgesIds.pop().split(':');
+        var sourceNodeLink = nodeLink[0] + ':' + nodeLink[1];
+        var targetNodeLink = nodeLink[2] + ':' + nodeLink[3];
         sankeyLinks.push({
-            'source': sankeyAlready[sourceNodeLink[1]],
-            'target': sankeyAlready[targetNodeLink[1]]
+            'source': sankeyAlready[sourceNodeLink],
+            'target': sankeyAlready[targetNodeLink]
         });
     }
 

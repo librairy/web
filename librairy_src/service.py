@@ -48,7 +48,7 @@ def create_compare_relations(compare_info, domains):
                 source_key = target_key
                 target_key = tmp_key
 
-            topic_key = str(source_key) + '_' + str(target_key)
+            topic_key = str(source_key) + ':' + str(target_key)
             if topic_key not in relations_return and \
                topic_key not in bad_relations:
 
@@ -150,9 +150,7 @@ def get_service_topic(request, domain_id, topic_id, topic_uri):
     # Get Topic from cache if it is available
 
     if config.CACHE_REDIS_ENABLED:
-        top_info_return = cache.get_topic_cache(
-            domain_id + ':' + topic_uri
-        )
+        top_info_return = cache.get_topic_cache(topic_uri)
     else:
         top_info_return = None
 
@@ -191,9 +189,7 @@ def get_service_topic(request, domain_id, topic_id, topic_uri):
 
             # Save
             if config.CACHE_REDIS_ENABLED:
-                cache.save_topic_cache(
-                    domain_id + ':' + topic_uri, words_return
-                )
+                cache.save_topic_cache(topic_uri, words_return)
 
         top_info_return = words_return
 
@@ -229,7 +225,7 @@ def get_service_topics(request, domain_id):
     # Get Topic information for each id
     for top in top_list:
         top_id = top.get('ref').get('id')
-        top_uri = os.path.basename(top.get('ref').get('uri'))
+        top_uri = domain_id + ':' + top_id
 
         # Get Information from cache or service
         top_info = get_service_topic(

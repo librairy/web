@@ -13,12 +13,13 @@ sigma.classes.graph.addMethod('neighbors', function(nodeId)
 {
     var k, neighbors = {}, neighborsIds = [],
         index = this.allNeighborsIndex[nodeId] || {};
-    for (k in index)
+    for (k = 0; k < Object.keys(index).length; k++)
     {
-        neighborsIds.push(this.nodesIndex[k].id);
-        neighbors[this.nodesIndex[k].id] = {
-            'label': this.nodesIndex[k].label,
-            'color': this.nodesIndex[k].color
+        var nK = Object.keys(index)[k];
+        neighborsIds.push(this.nodesIndex[nK].id);
+        neighbors[this.nodesIndex[nK].id] = {
+            'label': this.nodesIndex[nK].label,
+            'color': this.nodesIndex[nK].color
         };
     }
     return {'ids': neighborsIds, 'values': neighbors};
@@ -47,16 +48,17 @@ var showSigmaVisualization = function showSigmaVisualization(data)
     var externalEdgesIds = Object.keys(externalEdges);
     var internalEdges = data['internal'];
     var countEdge = 0;
-    for (var domain in domainsSelected)
+    for (var k = 0; k < Object.keys(domainsSelected).length; k++)
     {
-        var edgesList = Object.keys(internalEdges[domain]['relations']);
-        var nodesList = Object.keys(internalEdges[domain]['topics']);
+        var dK = Object.keys(domainsSelected)[k];
+        var edgesList = Object.keys(internalEdges[dK]['relations']);
+        var nodesList = Object.keys(internalEdges[dK]['topics']);
 
         // Create nodes for each domain
         for (var i = 0; i < nodesList.length; i++)
         {
             var nodeId = nodesList[i];
-            var nodeWords = internalEdges[domain]['topics'][nodesList[i]];
+            var nodeWords = internalEdges[dK]['topics'][nodesList[i]];
             sigGraph.graph.addNode({
                 id: nodeId,
                 label: nodeId,
@@ -64,18 +66,18 @@ var showSigmaVisualization = function showSigmaVisualization(data)
                 x: Math.random(),
                 y: Math.random(),
                 size: Math.random() * 10,
-                color: domainsSelected[domain]
+                color: domainsSelected[dK]
             });
         }
 
         // Create edges for each domain (internal links)
         for (i = 0; i < edgesList.length; i++)
         {
-            var edge = edgesList[i].split(":");
+            var iEdge = edgesList[i].split(":");
             sigGraph.graph.addEdge({
                 id: countEdge,
-                source: edge[0],
-                target: edge[1]
+                source: iEdge[0] + ':' + iEdge[1],
+                target: iEdge[2] + ':' + iEdge[3]
             });
             countEdge++;
         }
@@ -84,12 +86,12 @@ var showSigmaVisualization = function showSigmaVisualization(data)
     // Create external links
     for (i = countEdge; i < externalEdgesIds.length + countEdge; i++)
     {
-        var p = i - countEdge;
-        var eId = externalEdgesIds[p].split("_");
+        var positionEdge = i - countEdge;
+        var eEdge = externalEdgesIds[positionEdge].split(":");
         sigGraph.graph.addEdge({
             id: i,
-            source: eId[0].split(":")[1],
-            target: eId[1].split(":")[1]
+            source: eEdge[0] + ':' + eEdge[1],
+            target: eEdge[2] + ':' + eEdge[3]
         });
     }
 
