@@ -289,7 +289,7 @@ def get_service_domain(request, domain_id):
 
         # Save Domain to cache
         if len(dom_info_return):
-            dom_info_return['name'] = dom_info_return['container']['name']
+            dom_info_return['name'] = dom_info_return['container']['name'].replace('_', ' ')
             dom_info_return['id'] = dom_info_return['container']['id']
             del dom_info_return['container']
 
