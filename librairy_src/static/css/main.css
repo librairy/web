@@ -100,7 +100,7 @@ header.loaded-viz {
 #wrapper-viz,
 #wrapper-selector {
     width: 100%;
-    height: 90%;
+    height: 90.5%;
     top: 5%;
     left: 0;
     position: absolute;
@@ -108,6 +108,7 @@ header.loaded-viz {
 
 #wrapper-viz {
     overflow-y: auto;
+    overflow-x: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
