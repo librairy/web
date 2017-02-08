@@ -53,7 +53,7 @@ def create_compare_relations(compare_info, domains):
                topic_key not in bad_relations:
 
                 v = float(comparison["score"])
-                if v > 0.002:
+                if v > config.SERVICE_THEDOM:
                     relations_return[topic_key] = v
                 else:
                     bad_relations[topic_key] = v
@@ -83,8 +83,8 @@ def create_domain_relations(topics_info):
                     v = float(len(overlap)) / float(len(tkcwords))
                 v = int(v * 100)
 
-                # 30% is good balance between few words and much words
-                if v > 30:
+                # configurable balance between few words and much words
+                if v > config.SERVICE_THIDOM:
                     relations_return[topic_key] = v
                 else:
                     bad_relations[topic_key] = v

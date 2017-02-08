@@ -20,7 +20,7 @@ from time import strftime
 # GENERAL
 
 shortname = 'librairy'
-version = '1.0.6'
+version = '1.1.0'
 longname = 'Librairy Web'
 
 # FLASK
@@ -82,6 +82,11 @@ if SERVICE_LISTEN_PORT == 443 and SERVICE_LISTEN_PROT == 'http' or \
 SERVICE_LISTEN_URL = SERVICE_LISTEN_PROT + '://' + SERVICE_LISTEN_IP
 if SERVICE_LISTEN_PORT != 80 and SERVICE_LISTEN_PORT != 443:
     SERVICE_LISTEN_URL += ':' + str(SERVICE_LISTEN_PORT)
+
+# SERVICE WINDOW
+
+SERVICE_THIDOM = int(os.environ.get('LIBRAIRY_SERVICE_THRINT_DOMAIN', 30))
+SERVICE_THEDOM = float(os.environ.get('LIBRAIRY_SERVICE_THREXT_DOMAIN', 0.002))
 
 # SERVICE CACHE
 

@@ -22,6 +22,13 @@ ENV configuration:
 |LIBRAIRY_CACHE_PORT|6379|
 |LIBRAIRY_CACHE_PWD||
 
+ENV threshold configuration:
+
+|Variable|Default Value|Limits|
+|:---------|:----------|:----------|
+|LIBRAIRY_SERVICE_THRINT_DOMAIN|30|0 to 100|
+|LIBRAIRY_SERVICE_THREXT_DOMAIN|0.002|0 to 1|
+
 Docker execution:
 
 1. ``docker build -t . librairy-web``
