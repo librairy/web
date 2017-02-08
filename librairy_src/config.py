@@ -13,7 +13,6 @@
 import os
 import logging
 from time import strftime
-from logging.handlers import RotatingFileHandler
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
@@ -21,7 +20,7 @@ from logging.handlers import RotatingFileHandler
 # GENERAL
 
 shortname = 'librairy'
-version = '1.0.0'
+version = '1.0.1'
 longname = 'Librairy Web'
 
 # FLASK
@@ -36,9 +35,7 @@ FLASK_LOG_FILE = os.environ.get('LIBRAIRY_LOG', '/var/log/librairy.log')
 
 
 flask_log_level = 'ERROR' if not FLASK_DEBUG_MODE else 'DEBUG'
-flask_log_handler = RotatingFileHandler(
-    FLASK_LOG_FILE, maxBytes=10000000, backupCount=5
-)
+flask_log_handler = logging.FileHandler(FLASK_LOG_FILE)
 flask_log = logging.Logger('librairy-logger')
 flask_log.setLevel(flask_log_level)
 flask_log.addHandler(flask_log_handler)
