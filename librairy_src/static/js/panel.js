@@ -14,8 +14,7 @@ var showPanelNode = function showPanelNode(node, linksIds, linksValues)
     var wrap = d3.select('#wrapper');
     var panel = wrap.append('div').attr('id', 'info-panel');
     var header = panel.append('div').attr('class', 'info-panel-header').append('p');
-    if (node.hasOwnProperty('label'))
-        header.text(node.label);
+    if ('label' in node) header.text(node.label);
     else header.text(node.name);
     header.style('color', node.color);
     var subHeaderW = panel.append('div').attr('class', 'info-panel-header info-panel-sub-header');
